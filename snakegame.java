@@ -74,7 +74,6 @@ al=new ArrayList<>();
 				sbangle                     // Rotation angle in degrees
 		);
 		}
-
 		batch.end();
 		if(Gdx.input.isKeyPressed(Input.Keys.ENTER))start=true;
 		if (start){
@@ -121,8 +120,8 @@ al=new ArrayList<>();
 				angle=0;
 				al.add(new float[]{x,y,angle});
 			}
-		}}
-		if (start){
+		}
+
 			if(sbangle==0){
 				sbx+=Gdx.graphics.getDeltaTime()*200;
 				if(al.size()!=0) {
