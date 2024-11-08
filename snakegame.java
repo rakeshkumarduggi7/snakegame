@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
-
 public class snakegame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
@@ -25,6 +24,7 @@ public class snakegame extends ApplicationAdapter {
 	float sbx;
 	float sby;
 	ArrayList<float[]> al;
+	ArrayList<TextureRegion> sba;
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
@@ -41,6 +41,8 @@ public class snakegame extends ApplicationAdapter {
 		bmf.setColor(Color.GOLD);
 		angle=0;
 		sbangle=0;
+		sba=new ArrayList<>();
+		sba.add(sb);
 al=new ArrayList<>();
 	}
 	@Override
@@ -62,15 +64,17 @@ al=new ArrayList<>();
 					1f, 1f,                 // Scale
 					angle                     // Rotation angle in degrees
 			);
+		for (TextureRegion x:sba){
 		batch.draw(
-				sb,
+				x,
 				sbx, sby,                   // Position of the image
 				sb.getRegionWidth() / 2f, sb.getRegionHeight() / 2f,  // Origin of rotation (center of image)
 				32, 32,                 // Width and height
 				1f, 1f,                 // Scale
 				sbangle                     // Rotation angle in degrees
-		)
-		;
+		);
+		}
+
 		batch.end();
 		if(Gdx.input.isKeyPressed(Input.Keys.ENTER))start=true;
 		if (start){
