@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.ArrayList;
+ import java.util.Random;
+
 public class snakegame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture img;
@@ -25,6 +27,10 @@ public class snakegame extends ApplicationAdapter {
 	float sby;
 	ArrayList<float[]> al;
 	ArrayList<TextureRegion> sba;
+ ArrayList<float[]> bc;
+	ArrayList<int[]> foodco;
+	Random r=new Random();
+	Texture sf;
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
@@ -44,11 +50,22 @@ public class snakegame extends ApplicationAdapter {
 		sba=new ArrayList<>();
 		sba.add(sb);
 al=new ArrayList<>();
+ bc=new ArrayList<>();
+ bc.add(new float[]{318,170,0});
+foodco=new ArrayList<>();
+		foodco.add(new int[]{r.nextInt(0,700),r.nextInt(0,330)});
+		foodco.add(new int[]{r.nextInt(0,700),r.nextInt(0,330)});
+		sf=new Texture(Gdx.files.internal("sf.jpg"));
 	}
 	@Override
 	public void render() {
 		ScreenUtils.clear(0, 0, 0, 1);
+		if(foodco.size()==0){
+			foodco.add(new int[]{r.nextInt(0,700),r.nextInt(0,330)});
+			foodco.add(new int[]{r.nextInt(0,700),r.nextInt(0,330)});
+		}
 		batch.begin();
+
 		if(!start){
 			x=350;
 			y=170;
@@ -64,16 +81,18 @@ al=new ArrayList<>();
 					1f, 1f,                 // Scale
 					angle                     // Rotation angle in degrees
 			);
-		for (TextureRegion x:sba){
+		for (int i=0;i<bc.size();i++){
 		batch.draw(
-				x,
-				sbx, sby,                   // Position of the image
+			 sb,
+				bc.get(i)[0], bc.get(i)[1],                   // Position of the image
 				sb.getRegionWidth() / 2f, sb.getRegionHeight() / 2f,  // Origin of rotation (center of image)
 				32, 32,                 // Width and height
 				1f, 1f,                 // Scale
-				sbangle                     // Rotation angle in degrees
+				bc.get(i)[2]                     // Rotation angle in degrees
 		);
 		}
+		if(start){
+		batch.draw(sf,foodco.get(0)[0],foodco.get(0)[1]);}
 		batch.end();
 		if(Gdx.input.isKeyPressed(Input.Keys.ENTER))start=true;
 		if (start){
@@ -121,56 +140,64 @@ al=new ArrayList<>();
 				al.add(new float[]{x,y,angle});
 			}
 		}
+		for (float[] co:bc){
+			if(co[2]==0){
+				co[0]+=Gdx.graphics.getDeltaTime()*200;
+				if(al.size()!=0) {
+					if (al.get(0)[0]<=co[0]){
+						co[2]=al.get(0)[2];
+						al.remove(0);
+					}
+				}
+			}
+			else if (co[2]==180) {
+				co[0]-=Gdx.graphics.getDeltaTime()*200;
+				if(al.size()!=0) {
+					if (al.get(0)[0]>=co[0]){
+						co[2]=al.get(0)[2];
+						al.remove(0);
+					}
+				}
+			}
+			else if (co[2]==270) {
+				co[1]-=Gdx.graphics.getDeltaTime()*200;
+				if(al.size()!=0) {
+					if (al.get(0)[1]>=co[1]){
+						co[2]=al.get(0)[2];
+						al.remove(0);
+					}
+				}
 
-			if(sbangle==0){
-				sbx+=Gdx.graphics.getDeltaTime()*200;
+			}
+			else if (co[2]==90) {
+				co[1]+=Gdx.graphics.getDeltaTime()*200;
 				if(al.size()!=0) {
-					if (al.get(0)[0]<=sbx){
-						sbangle=al.get(0)[2];
+					if (al.get(0)[1]<=co[1]){
+						co[2]=al.get(0)[2];
 						al.remove(0);
 					}
 				}
 			}
-			else if (sbangle==180) {
-				sbx-=Gdx.graphics.getDeltaTime()*200;
-				if(al.size()!=0) {
-					if (al.get(0)[0]>=sbx){
-						sbangle=al.get(0)[2];
-						al.remove(0);
-					}
-				}
-			}
-			else if (sbangle==270) {
-				sby-=Gdx.graphics.getDeltaTime()*200;
-				if(al.size()!=0) {
-					if (al.get(0)[1]>=sby){
-						sbangle=al.get(0)[2];
-						al.remove(0);
-					}
-				}
+		}}
+		if (x>=foodco.get(0)[0]&&x<=foodco.get(0)[0]+32 &&y>=foodco.get(0)[1]&&y<=foodco.get(0)[1]+32 ){
+			foodco.remove(0);
 
-			}
-			else if (sbangle==90) {
-				sby+=Gdx.graphics.getDeltaTime()*200;
-				if(al.size()!=0) {
-					if (al.get(0)[1]<=sby){
-						sbangle=al.get(0)[2];
-						al.remove(0);
-					}
-				}
-			}
 		}
 		if(x>=Gdx.graphics.getWidth()||x<0){
 			start=false;
 		al.clear();	sbx=318;
 			sby=170;
 			sbangle=0;
+			bc.clear();
+			bc.add(new float[]{318,170,0});
 		}
 		if(y>=Gdx.graphics.getHeight()||y<0){
 			start=false;
 		al.clear();	sbx=318;
 			sby=170;
 			sbangle=0;
+			bc.clear();
+			bc.add(new float[]{318,170,0});
 		}
 	}
 	@Override
